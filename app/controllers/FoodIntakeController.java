@@ -14,10 +14,9 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class FoodIntakeController extends Controller {
 
@@ -81,9 +80,63 @@ public class FoodIntakeController extends Controller {
 
     @Transactional
     @Authenticator
-    public  Result deleteFoodIntake() {
+    public  Result deleteFoodIntakeById(Integer Id) {
 
-        return ok();
+        final User user = (User) ctx().args.get("user");
+
+        if (null == Id) {
+            return badRequest("Id must be provided");
+        }
+
+        final FoodIntake foodIntake = foodIntakeDao.delete(Id);
+
+        final JsonNode result = Json.toJson(foodIntake);
+        return ok(result);
+
+    }
+
+    @Transactional
+    @Authenticator
+    public Result getAllFoodIntake() {
+
+        final User user = (User) ctx().args.get("user");
+
+        Collection<FoodIntake> intakes = foodIntakeDao.all();
+
+        final JsonNode result = Json.toJson(intakes);
+
+        return ok(result);
+
+    }
+
+    @Authenticator
+    @Transactional
+    public Result getStats(String startDate, String endDate){
+
+        final User user = (User) ctx().args.get("user");
+
+
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+
+            Date sDate = formatter.parse(startDate);
+            LOGGER.debug("start Date :{}",sDate);
+
+            Date eDate = formatter.parse(endDate);
+            LOGGER.debug("end Date :{}",eDate);
+
+            Collection<FoodIntake> stats = foodIntakeDao.getStats(sDate, eDate);
+
+            final JsonNode result = Json.toJson(stats);
+
+            return ok(result);
+
+        } catch(ParseException e){
+            e.printStackTrace();
+        }
+
+        return badRequest();
+
     }
 
 }

@@ -7,7 +7,11 @@ import play.db.jpa.JPAApi;
 
 import javax.inject.Inject;
 import javax.persistence.TypedQuery;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -94,5 +98,23 @@ public class FoodIntakeDaoImpl implements FoodIntakeDao {
         }
 
         return intakes;
+    }
+
+    @Override
+    public Collection<FoodIntake> getStats(Date startDate, Date endDate){
+        //TODO Get user context
+        if(null == startDate || null == endDate){
+            return null;
+        }
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String sDate =dateFormat.format(startDate);
+        String eDate = dateFormat.format(endDate);
+        //TODO get total calorie count using a for loop
+        String queryString = "SELECT f FROM FoodIntake f where date >= '" + sDate +" 00:01:00" + "'"+ "and date <='" + eDate  + " 23:59:00" + "'";
+        LOGGER.debug("query :{}",queryString);
+        TypedQuery<FoodIntake> query = jpaApi.em().createQuery(queryString, FoodIntake.class);
+        List<FoodIntake> stats = query.getResultList();
+        return stats;
     }
 }

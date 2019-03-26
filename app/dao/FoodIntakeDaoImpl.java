@@ -1,6 +1,8 @@
 package dao;
 
+import controllers.Security.Authenticator;
 import models.FoodIntake;
+import models.User;
 import play.Logger;
 import play.db.jpa.JPAApi;
 
@@ -14,6 +16,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+
+import static play.mvc.Controller.ctx;
 
 public class FoodIntakeDaoImpl implements FoodIntakeDao {
 
@@ -100,21 +104,42 @@ public class FoodIntakeDaoImpl implements FoodIntakeDao {
         return intakes;
     }
 
+    @Authenticator
     @Override
     public Collection<FoodIntake> getStats(Date startDate, Date endDate){
-        //TODO Get user context
+
+        final User user = (User) ctx().args.get("user");
+
         if(null == startDate || null == endDate){
             return null;
         }
-
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String sDate =dateFormat.format(startDate);
         String eDate = dateFormat.format(endDate);
-        //TODO get total calorie count using a for loop
         String queryString = "SELECT f FROM FoodIntake f where date >= '" + sDate +" 00:01:00" + "'"+ "and date <='" + eDate  + " 23:59:00" + "'";
         LOGGER.debug("query :{}",queryString);
         TypedQuery<FoodIntake> query = jpaApi.em().createQuery(queryString, FoodIntake.class);
         List<FoodIntake> stats = query.getResultList();
         return stats;
     }
+
+    @Authenticator
+    @Override
+    public Collection<FoodIntake> getAllFoodIntake(Date currDate) {
+
+        final User user = (User) ctx().args.get("user");
+
+
+        if (null == currDate ) {
+            return null;
+        }
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String sDate = dateFormat.format(currDate);
+        String queryString = "SELECT f FROM FoodIntake f where date >= '" + sDate +" 00:01:00" + "'"+ "and date <='" + sDate  + " 23:59:00" + "'";
+        LOGGER.debug("query :{}", queryString);
+        TypedQuery<FoodIntake> query = jpaApi.em().createQuery(queryString, FoodIntake.class);
+        List<FoodIntake> stats = query.getResultList();
+        return stats;
+    }
 }
+

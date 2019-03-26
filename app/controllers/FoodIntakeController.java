@@ -16,6 +16,7 @@ import play.mvc.Result;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 
 public class FoodIntakeController extends Controller {
@@ -97,17 +98,43 @@ public class FoodIntakeController extends Controller {
 
     @Transactional
     @Authenticator
-    public Result getAllFoodIntake() {
+    public Result getAllFoodIntake(String currDate) {
 
         final User user = (User) ctx().args.get("user");
 
-        Collection<FoodIntake> intakes = foodIntakeDao.all();
+        if(null == user.getAccessToken()){
+            System.out.println("token is"+user.getAccessToken());
+        }
 
-        final JsonNode result = Json.toJson(intakes);
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
-        return ok(result);
+            Date sDate = formatter.parse(currDate);
+            LOGGER.debug("sDate :{}",sDate);
 
+
+            Date date = new Date();
+
+            LOGGER.debug(" in date:{}",date);
+
+            if(!sDate.after(date)) {
+
+                LOGGER.debug("date:{}",date);
+
+                Collection<FoodIntake> stats = foodIntakeDao.getAllFoodIntake(date);
+
+                final JsonNode result = Json.toJson(stats);
+
+                return ok(result);
+            }
+
+        } catch(ParseException e){
+            e.printStackTrace();
+        }
+
+        return ok();
     }
+
 
     @Authenticator
     @Transactional
@@ -115,6 +142,9 @@ public class FoodIntakeController extends Controller {
 
         final User user = (User) ctx().args.get("user");
 
+        if(null == user.getAccessToken()){
+            System.out.println("token is"+user.getAccessToken());
+        }
 
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
@@ -127,8 +157,18 @@ public class FoodIntakeController extends Controller {
 
             Collection<FoodIntake> stats = foodIntakeDao.getStats(sDate, eDate);
 
-            final JsonNode result = Json.toJson(stats);
+            HashMap<Date,Integer> logs = new HashMap<>();
+            for(FoodIntake item:stats) {
 
+                final Integer quantity = item.getQuantity();
+                final Integer calorie = item.food.getCalories();
+                final Date date = item.getDate();
+
+                Integer calorieCount = quantity * calorie;
+                LOGGER.debug("calorie count :{}", calorieCount);
+            }
+
+            final JsonNode result = Json.toJson(logs);
             return ok(result);
 
         } catch(ParseException e){

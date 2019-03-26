@@ -10,6 +10,7 @@ public interface FoodIntakeDao extends CrudDao<FoodIntake, Integer>{
 
     Collection<FoodIntake> createFoodIntake(Collection<FoodIntake> intakes);
     Collection<FoodIntake> getStats(Date startDate, Date endDate);
+    Collection<FoodIntake> getAllFoodIntake(Date currDate);
 
 
 }

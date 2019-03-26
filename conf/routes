@@ -18,8 +18,8 @@
 
 POST /foodIntake                     controllers.FoodIntakeController.createFoodIntake()
 DELETE /foodIntake/:Id               controllers.FoodIntakeController.deleteFoodIntakeById(Id : Integer)
-GET /foodIntake                     controllers.FoodIntakeController.getAllFoodIntake()
-GET /foodIntake/stats      controllers.FoodIntakeController.getStats(startDate : String,endDate : String)
+GET /foodIntake/today                      controllers.FoodIntakeController.getAllFoodIntake(date : String)
+GET /foodIntake/stats                controllers.FoodIntakeController.getStats(startDate : String,endDate : String)
 
 POST /profile                             controllers.ProfileController.createProfile()
 PUT /profile/me                           controllers.ProfileController.updateProfile()

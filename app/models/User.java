@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import javax.persistence.Basic;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.util.Date;
 
 @Entity
 public class User {
@@ -49,6 +50,12 @@ public class User {
     Role role;
     State state;
 
+
+    @Basic
+    @JsonProperty("registration date")
+    private Date date;
+
+
     public User() {
    //Important for json serialization
     }
@@ -78,26 +85,32 @@ public class User {
     }
 
     public String getPasswordHash() {
+
         return passwordHash;
     }
 
     public void setPasswordHash(String passwordHash) {
+
         this.passwordHash = passwordHash;
     }
 
     public String getSalt() {
+
         return salt;
     }
 
     public void setSalt(String salt) {
+
         this.salt = salt;
     }
 
     public Integer getHashIterations() {
+
         return hashIterations;
     }
 
     public void setHashIterations(Integer hashIterations) {
+
         this.hashIterations = hashIterations;
     }
 
@@ -140,6 +153,16 @@ public class User {
     public void setAccessToken(String accessToken){
 
         this.accessToken = accessToken;
+    }
+
+    public Date getDate() {
+
+        return date;
+    }
+
+    public void setDate(Date date) {
+
+        this.date = date;
     }
 
 }

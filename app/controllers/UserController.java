@@ -15,7 +15,9 @@ import play.mvc.Result;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Optional;
 import java.util.Random;
 
@@ -70,6 +72,11 @@ public class UserController extends Controller {
 
         final User newUser = userDao.create(user);
         newUser.setAccessToken(generateAccessToken());
+
+        Date date = new Date();
+
+        newUser.setDate(date);
+
 
         final JsonNode result = Json.toJson(newUser);
 
@@ -150,6 +157,7 @@ public class UserController extends Controller {
         }
 
         existingUser.setAccessToken(generateAccessToken());
+
 
         userDao.update(existingUser);
 

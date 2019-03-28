@@ -6,18 +6,14 @@ import models.User;
 import play.Logger;
 import play.db.jpa.JPAApi;
 
-
 import javax.inject.Inject;
 import javax.persistence.TypedQuery;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-
-import static play.mvc.Controller.ctx;
 
 public class FoodIntakeDaoImpl implements FoodIntakeDao {
 
@@ -104,39 +100,41 @@ public class FoodIntakeDaoImpl implements FoodIntakeDao {
         return intakes;
     }
 
-    @Authenticator
     @Override
-    public Collection<FoodIntake> getStats(Date startDate, Date endDate){
-
-        final User user = (User) ctx().args.get("user");
+    public Collection<FoodIntake> getStats(Date startDate, Date endDate,User user){
 
         if(null == startDate || null == endDate){
             return null;
         }
+
+        final String userName = user.getName();
+
+
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String sDate =dateFormat.format(startDate);
         String eDate = dateFormat.format(endDate);
-        String queryString = "SELECT f FROM FoodIntake f where date >= '" + sDate +" 00:01:00" + "'"+ "and date <='" + eDate  + " 23:59:00" + "'";
-        LOGGER.debug("query :{}",queryString);
+        String queryString = "SELECT f FROM FoodIntake f where date >= '" + sDate +" 00:01:00" + "'"+ "and date <='" + eDate  + " 23:59:00" + "'" + " and user_name = " + "'" + userName + "'";
+        //LOGGER.debug("query :{}",queryString);
         TypedQuery<FoodIntake> query = jpaApi.em().createQuery(queryString, FoodIntake.class);
         List<FoodIntake> stats = query.getResultList();
         return stats;
     }
 
-    @Authenticator
     @Override
-    public Collection<FoodIntake> getAllFoodIntake(Date currDate) {
+    public Collection<FoodIntake> getAllFoodIntake(Date startDate, Date endDate, User user) {
 
-        final User user = (User) ctx().args.get("user");
-
-
-        if (null == currDate ) {
+        if(null == startDate || null == endDate){
             return null;
         }
+
+        final String userName = user.getName();
+
+
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String sDate = dateFormat.format(currDate);
-        String queryString = "SELECT f FROM FoodIntake f where date >= '" + sDate +" 00:01:00" + "'"+ "and date <='" + sDate  + " 23:59:00" + "'";
-        LOGGER.debug("query :{}", queryString);
+        String sDate =dateFormat.format(startDate);
+        String eDate = dateFormat.format(endDate);
+        String queryString = "SELECT f FROM FoodIntake f where date >= '" + sDate +" 00:01:00" + "'"+ "and date <='" + eDate  + " 23:59:00" + "'" + " and user_name = " + "'" + userName + "'";
+        //LOGGER.debug("query :{}", queryString);
         TypedQuery<FoodIntake> query = jpaApi.em().createQuery(queryString, FoodIntake.class);
         List<FoodIntake> stats = query.getResultList();
         return stats;

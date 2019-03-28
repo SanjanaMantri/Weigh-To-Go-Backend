@@ -16,7 +16,6 @@ import play.mvc.Result;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.*;
 
 public class FoodIntakeController extends Controller {
@@ -49,7 +48,7 @@ public class FoodIntakeController extends Controller {
         for (JsonNode node : json) {
             final FoodIntake intake = Json.fromJson(node, FoodIntake.class);
 
-            LOGGER.debug("food id {}", node.get("foodId"));
+            //LOGGER.debug("food id {}", node.get("foodId"));
 
             final Integer foodId = node.get("foodId").asInt();
             final Optional<Food> optionalFood = foodDao.read(foodId);
@@ -69,7 +68,7 @@ public class FoodIntakeController extends Controller {
             return badRequest();
         }
 
-        LOGGER.debug("Intakes {} ",intakes);
+       // LOGGER.debug("Intakes {} ",intakes);
 
         final Collection<FoodIntake> newIntake = foodIntakeDao.createFoodIntake(intakes);
 
@@ -98,37 +97,35 @@ public class FoodIntakeController extends Controller {
 
     @Transactional
     @Authenticator
-    public Result getAllFoodIntake(String currDate) {
+    public Result getAllFoodIntake(String startDate, String endDate) {
 
         final User user = (User) ctx().args.get("user");
-
-        if(null == user.getAccessToken()){
-            System.out.println("token is"+user.getAccessToken());
-        }
 
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
-            Date sDate = formatter.parse(currDate);
-            LOGGER.debug("sDate :{}",sDate);
+            Date sDate = formatter.parse(startDate);
+            //LOGGER.debug("sDate :{}", sDate);
 
+            Date eDate = formatter.parse(endDate);
+            //LOGGER.debug("end Date :{}",eDate);
 
             Date date = new Date();
+            //LOGGER.debug(" in date:{}", date);
 
-            LOGGER.debug(" in date:{}",date);
-
-            if(!sDate.after(date)) {
-
-                LOGGER.debug("date:{}",date);
-
-                Collection<FoodIntake> stats = foodIntakeDao.getAllFoodIntake(date);
-
-                final JsonNode result = Json.toJson(stats);
-
-                return ok(result);
+            if (sDate.after(date) || eDate.after(date)) {
+                return badRequest();
             }
 
-        } catch(ParseException e){
+            //LOGGER.debug("date:{}", date);
+
+            Collection<FoodIntake> stats = foodIntakeDao.getAllFoodIntake(sDate,eDate,user);
+
+            final JsonNode result = Json.toJson(stats);
+
+            return ok(result);
+
+        } catch (ParseException e) {
             e.printStackTrace();
         }
 
@@ -142,34 +139,40 @@ public class FoodIntakeController extends Controller {
 
         final User user = (User) ctx().args.get("user");
 
-        if(null == user.getAccessToken()){
-            System.out.println("token is"+user.getAccessToken());
-        }
-
         try {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 
             Date sDate = formatter.parse(startDate);
-            LOGGER.debug("start Date :{}",sDate);
+            //LOGGER.debug("start Date :{}",sDate);
 
             Date eDate = formatter.parse(endDate);
-            LOGGER.debug("end Date :{}",eDate);
+            //LOGGER.debug("end Date :{}",eDate);
 
-            Collection<FoodIntake> stats = foodIntakeDao.getStats(sDate, eDate);
+            Collection<FoodIntake> stats = foodIntakeDao.getStats(sDate, eDate,user);
 
-            HashMap<Date,Integer> logs = new HashMap<>();
+            HashMap<String,Integer> logs = new HashMap<>();
             for(FoodIntake item:stats) {
 
                 final Integer quantity = item.getQuantity();
                 final Integer calorie = item.food.getCalories();
                 final Date date = item.getDate();
+                final String dateString = formatter.format(date);
 
                 Integer calorieCount = quantity * calorie;
-                LOGGER.debug("calorie count :{}", calorieCount);
-            }
+                //LOGGER.debug("calorie count :{}", calorieCount);
 
+                Integer oldVal = logs.get(dateString);
+
+                if (null == oldVal) {
+                    logs.put(dateString, calorieCount);
+                } else {
+                    logs.put(dateString, calorieCount + oldVal);
+                }
+
+            }
             final JsonNode result = Json.toJson(logs);
             return ok(result);
+
 
         } catch(ParseException e){
             e.printStackTrace();

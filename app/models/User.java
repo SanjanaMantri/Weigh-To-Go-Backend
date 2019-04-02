@@ -52,7 +52,7 @@ public class User {
 
 
     @Basic
-    @JsonProperty("registration date")
+    @JsonProperty("registrationDate")
     private Date date;
 
 

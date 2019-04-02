@@ -50,15 +50,21 @@ public class FoodDaoImpl implements FoodDao{
             throw new IllegalArgumentException("Food Name must be provided");
         }
 
-        final Food existingFood = jpaApi.em().find(Food.class, food.getName());
-        if(null == existingFood) {
+        String name = food.getName();
+
+        String queryString = "SELECT f FROM Food f where name = " + "'" + name + "'";
+        TypedQuery<Food> query = jpaApi.em().createQuery(queryString,Food.class);
+        Food updatedFood = query.getSingleResult();
+
+        if(null == updatedFood) {
             return null;
         }
-        existingFood.setCalories(food.getCalories());
+        updatedFood.setCalories(food.getCalories());
+        updatedFood.setName(food.getName());
 
-        jpaApi.em().persist(existingFood);
+        jpaApi.em().persist(updatedFood);
 
-        return existingFood;
+        return updatedFood;
     }
 
     public Food delete(Integer Id) {
@@ -96,4 +102,25 @@ public class FoodDaoImpl implements FoodDao{
 
         return foodItems;
     }
+
+//    @Override
+//    public Collection<Food> updateAllFood(Collection<Food> foodItems){
+//
+//
+//        if(null == foodItems) {
+//            throw new IllegalArgumentException("Food must be provided");
+//        }
+//
+//        for(Food item:foodItems){
+//            String name = item.getName();
+//            String queryString = "SELECT f FROM Food f where name = " + "'" + name + "'";
+//            TypedQuery<Food> query = jpaApi.em().createQuery(queryString,Food.class);
+//            Food updatedFood = query.getSingleResult();
+//            updatedFood.setName(item.getName());
+//            updatedFood.setCalories(item.getCalories());
+//            jpaApi.em().persist(updatedFood);
+//        }
+//
+//        return foodItems;
+//    }
 }

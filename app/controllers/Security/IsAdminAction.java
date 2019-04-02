@@ -19,7 +19,7 @@ public class IsAdminAction extends Action.Simple {
             return CompletableFuture.completedFuture(forbidden());
         }
 
-        Logger.debug("User has admin role");
+        //Logger.debug("User has admin role");
 
         return delegate.call(ctx);
 

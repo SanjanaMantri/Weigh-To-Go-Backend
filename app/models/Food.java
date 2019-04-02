@@ -21,12 +21,21 @@ public class Food {
     private Integer calories;
 
 
+    @Basic
+    @JsonProperty("ImageUrl")
+    public String imageUrl;
+
+    /*@OneToOne()
+    private Image image;*/
+
+
     public Food() {
     }
 
-    public Food(String name, Integer calories) {
+    public Food(String name, Integer calories,String imageUrl) {
         this.name = name;
         this.calories = calories;
+        this.imageUrl = imageUrl;
 
     }
 
@@ -49,6 +58,15 @@ public class Food {
 
         this.calories = calories;
     }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
+    }
+
 
     //Removed quantity
 }

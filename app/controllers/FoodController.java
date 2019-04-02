@@ -32,8 +32,8 @@ public class FoodController extends Controller {
 
         final Food food = Json.fromJson(json, Food.class);
 
-        LOGGER.debug("Food title = " + food.getName());
-        LOGGER.error("This is an error");
+        //LOGGER.debug("Food title = " + food.getName());
+        //LOGGER.error("This is an error");
 
         if (null == food.getName()) {
             return badRequest("Title must be provided");
@@ -126,15 +126,13 @@ public class FoodController extends Controller {
     @Transactional
     public Result getAllFood() {
 
-    /*TypedQuery<Book> query = jpaApi.em().createQuery("SELECT b FROM Book b", Book.class);
-    List<Book> books = query.getResultList();*/
-
         Collection<Food> foods = foodDao.all();
 
         final JsonNode result = Json.toJson(foods);
 
         return ok(result);
     }
+
 
 }
 

@@ -7,5 +7,6 @@ import java.util.Collection;
 public interface FoodDao extends CrudDao<Food, Integer>{
 
     Collection<Food> createFoods(Collection<Food> foodItems);
+    //Collection<Food> updateAllFood(Collection<Food> foodItems);
 
 }

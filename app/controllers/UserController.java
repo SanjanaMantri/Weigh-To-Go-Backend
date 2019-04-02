@@ -15,7 +15,6 @@ import play.mvc.Result;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Optional;
@@ -44,7 +43,7 @@ public class UserController extends Controller {
 
         final User user = Json.fromJson(json, User.class);
 
-        LOGGER.debug("User name is  = " + user.getName());
+        //LOGGER.debug("User name is  = " + user.getName());
 
         if (null == user.getName()  || null == user.getEmail()) {
             return badRequest("Missing Mandatory Parameters");
@@ -112,7 +111,7 @@ public class UserController extends Controller {
             byte[] messageDigest = md.digest(concat.getBytes());
             final String passwordHash = BaseEncoding.base16().lowerCase().encode(messageDigest);
 
-            LOGGER.debug("Password hash {}", passwordHash);
+            //LOGGER.debug("Password hash {}", passwordHash);
 
             return passwordHash;
         }
@@ -166,7 +165,6 @@ public class UserController extends Controller {
         return ok(result);
 
     }
-
 
     private String generateAccessToken() {
 

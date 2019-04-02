@@ -9,7 +9,6 @@ import play.mvc.Action;
 import play.mvc.Http;
 import play.mvc.Result;
 
-import java.sql.SQLOutput;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -32,13 +31,13 @@ public class AuthenticatorAction extends Action.Simple {
 
         final Optional<String> authHeader = ctx.request().header("Authorization");
 
-        LOGGER.debug("Access token {}", authHeader);
+        //LOGGER.debug("Access token {}", authHeader);
 
         if (!authHeader.isPresent()) {
             return CompletableFuture.completedFuture(unauthorized("Go and sign in"));
         }
 
-        LOGGER.debug("Auth token = {}", authHeader.get());
+        //LOGGER.debug("Auth token = {}", authHeader.get());
 
         if (!authHeader.get().startsWith("Bearer ")) {
             return CompletableFuture.completedFuture(unauthorized("Invalid auth header format"));

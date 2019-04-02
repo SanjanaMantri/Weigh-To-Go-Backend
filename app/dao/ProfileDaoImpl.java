@@ -7,7 +7,12 @@ import play.db.jpa.JPAApi;
 
 import javax.inject.Inject;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -65,7 +70,7 @@ public class ProfileDaoImpl implements ProfileDao {
         if(null == existingProfile) {
             return null;
         }
-        existingProfile.setAge(profile.getAge());
+        existingProfile.setDob(profile.getDob());
         existingProfile.setHeight(profile.getHeight());
         existingProfile.setWeight(profile.getWeight());
         existingProfile.setGoalPlan(profile.getGoalPlan());
@@ -77,7 +82,20 @@ public class ProfileDaoImpl implements ProfileDao {
 
     @Override
     public Profile delete(Integer Id) {
-        return null;
+
+        if(null == Id) {
+            throw new IllegalArgumentException("Food Id must be provided");
+        }
+
+        final Profile existingProfile = jpaApi.em().find(Profile.class, Id);
+        if(null == existingProfile) {
+            return null;
+        }
+
+        jpaApi.em().remove(existingProfile);
+        return existingProfile;
+
+
     }
 
     @Override

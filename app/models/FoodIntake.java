@@ -48,8 +48,8 @@ public class FoodIntake {
         return Id;
     }
 
-    public void setId(Integer id) {
-        Id = id;
+    public void setId(Integer Id) {
+        Id = Id;
     }
 
     public User getUser() {

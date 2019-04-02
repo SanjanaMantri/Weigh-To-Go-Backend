@@ -36,6 +36,8 @@ public class FoodIntakeController extends Controller {
     @Authenticator
     public Result createFoodIntake() {
 
+        LOGGER.debug("createFoodIntake");
+
         final JsonNode json = request().body().asJson();
 
         final User user = (User) ctx().args.get("user");
@@ -69,6 +71,9 @@ public class FoodIntakeController extends Controller {
         }
 
        // LOGGER.debug("Intakes {} ",intakes);
+
+        LOGGER.debug("createFoodIntake count {}", intakes.size());
+
 
         final Collection<FoodIntake> newIntake = foodIntakeDao.createFoodIntake(intakes);
 
@@ -169,8 +174,18 @@ public class FoodIntakeController extends Controller {
                     logs.put(dateString, calorieCount + oldVal);
                 }
 
+
             }
-            final JsonNode result = Json.toJson(logs);
+
+            Collection<Map<String, Object>> list = new ArrayList<>();
+            for (Map.Entry<String, Integer> entry : logs.entrySet()) {
+                Map<String, Object> map = new HashMap<>();
+                map.put("date", entry.getKey());
+                map.put("calories", entry.getValue());
+                list.add(map);
+            }
+
+            final JsonNode result = Json.toJson(list);
             return ok(result);
 
 

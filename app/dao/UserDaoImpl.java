@@ -94,7 +94,7 @@ public class UserDaoImpl implements UserDao {
     public User findUserByAuthToken(String authToken) {
 
         String queryString = "SELECT u from User u WHERE accessToken = '" + authToken + "'";
-        LOGGER.info("query string {}", queryString);
+        //LOGGER.info("query string {}", queryString);
 
         TypedQuery<User> query = jpaApi.em().createQuery(queryString, User.class);
         List<User> users = query.getResultList();

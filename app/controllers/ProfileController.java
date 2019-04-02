@@ -13,6 +13,10 @@ import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
+import java.util.Date;
 
 
 public class ProfileController extends Controller {
@@ -44,7 +48,7 @@ public class ProfileController extends Controller {
 
         profile.setUser(user);
 
-        LOGGER.debug("Details {} ",profile);
+        //LOGGER.debug("Details {} ",profile);
 
         final Profile newProfile = profileDao.create(profile);
 
@@ -85,13 +89,25 @@ public class ProfileController extends Controller {
 
         final String username = user.getName();
 
-        LOGGER.debug("username :{}",username);
+        //LOGGER.debug("username :{}",username);
 
         final Profile currentProfile = profileDao.searchByUserName(username);
 
         final JsonNode result = Json.toJson(currentProfile);
 
         return ok(result);
+
+    }
+
+    @Transactional
+    public Result deleteProfileById(Integer Id){
+
+
+        final Profile profile = profileDao.delete(Id);
+
+        final JsonNode result = Json.toJson(profile);
+        return ok(result);
+
 
     }
 

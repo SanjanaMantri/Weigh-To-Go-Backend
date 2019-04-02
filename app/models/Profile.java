@@ -1,13 +1,18 @@
 package models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.Period;
+import java.time.ZoneId;
+import java.util.Date;
 
 @Entity
 public class Profile {
 
-    public enum  Gender{
+    public enum Gender {
         MALE,
         FEMALE,
     }
@@ -24,8 +29,13 @@ public class Profile {
 
 
     @Basic
-    @JsonProperty("age")
-    private Integer age;
+    @JsonProperty("dob")
+    private Date dob;
+
+
+//    @Basic
+//    @JsonIgnore
+//    private Integer age;
 
     @Basic
     @JsonProperty("height")
@@ -51,9 +61,17 @@ public class Profile {
 
     @Override
     public String toString() {
-        return "User " + user + " age " + age + "height" + height + "weight" + weight;
+        return "User " + user + "height" + height + "weight" + weight;
     }
 
+
+    public Date getDob() {
+        return dob;
+    }
+
+    public void setDob(Date dob) {
+        this.dob = dob;
+    }
 
     public User getUser() {
 
@@ -65,15 +83,20 @@ public class Profile {
         this.user = user;
     }
 
+    @JsonProperty("age")
     public Integer getAge() {
+
+
+        LocalDate today = LocalDate.now();
+
+        LocalDate birthDate= dob.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        final Integer age = Period.between(birthDate,today).getYears();
 
         return age;
     }
 
-    public void setAge(Integer age) {
 
-        this.age = age;
-    }
 
     public Integer getHeight() {
         return height;
@@ -95,14 +118,17 @@ public class Profile {
     }
 
     public Gender getGender() {
+
         return gender;
     }
 
     public void setGender(Gender gender) {
+
         this.gender = gender;
     }
 
     public Integer getId() {
+
         return Id;
     }
 
@@ -112,10 +138,12 @@ public class Profile {
 
 
     public Float getGoalPlan() {
+
         return goalPlan;
     }
 
     public void setGoalPlan(Float goalPlan) {
+
         this.goalPlan = goalPlan;
     }
 
